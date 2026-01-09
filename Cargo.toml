@@ -16,6 +16,7 @@ solana-instruction-view = { version = "1.0", features = ["cpi"] }
 solana-program-log = "1.1.0"
 solana-program-error = "3.0.0"
 solana-program = "=1.18.22"
+blake3 = "=1.5.0"
 
 [features]
 no-entrypoint = []
