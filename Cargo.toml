@@ -1,0 +1,17 @@
+[package]
+name = "pinocchio-token-program"
+description = "Simple token interaction program"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+pinocchio = { workspace = true, features = ["alloc"] }
+solana-program-log = "1.1.0"
+solana-program-error = { workspace = true }
+
+[features]
+no-entrypoint = []
