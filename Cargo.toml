@@ -9,9 +9,10 @@ license = "MIT"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-pinocchio = { workspace = true, features = ["alloc"] }
+pinocchio = { version = "0.10.1", features = ["alloc"] }
 solana-program-log = "1.1.0"
-solana-program-error = { workspace = true }
+solana-program-error = "3.0.0"
+solana-program = "2.1"
 
 [features]
 no-entrypoint = []
