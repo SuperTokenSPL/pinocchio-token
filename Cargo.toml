@@ -1,18 +1,20 @@
 [package]
 name = "pinocchio-token-program"
-description = "Simple token interaction program"
+description = "Pinocchio helpers to invoke Token program instructions"
 version = "0.1.0"
 edition = "2021"
-license = "MIT"
+license = "Apache-2.0"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-pinocchio = { version = "0.10.1", features = ["alloc"] }
+pinocchio = { version = "0.10.1", features = ["alloc", "cpi"] }
+solana-account-view = "1.0"
+solana-address = { version = "2.0", features = ["decode"] }
+solana-instruction-view = { version = "1.0", features = ["cpi"] }
 solana-program-log = "1.1.0"
 solana-program-error = "3.0.0"
-solana-program = "2.1"
 
 [features]
 no-entrypoint = []

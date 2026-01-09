@@ -1,77 +1,102 @@
-<h1 align="center">
-  <code>pinocchio-token</code>
-</h1>
 <p align="center">
-  <img width="200" alt="pinocchio-token" src="logo.png" />
+ <img alt="pinocchio-token" src="logo.png" height="100"/>
 </p>
+<h3 align="center">
+  <code>pinocchio-token</code>
+</h3>
 <p align="center">
   <strong>The First Wave of pTokens on Solana Mainnet</strong>
 </p>
-
 <p align="center">
   <a href="https://x.com/supertokenspl"><img src="https://img.shields.io/badge/X-@supertokenspl-blue?logo=x" /></a>
 </p>
 
 ## Overview
 
-Pinocchio-token is the **first pToken deployed to Solana Mainnet** &mdash; a lightweight, zero-dependency program built with the [pinocchio](https://github.com/anza-xyz/pinocchio) framework. This marks the beginning of a new era of hyper-optimized Solana programs.
+This crate contains [`pinocchio`](https://crates.io/crates/pinocchio) helpers to perform cross-program invocations (CPIs) for SPL Token instructions.
+
+Each instruction defines a `struct` with the accounts and parameters required. Once all values are set, you can call directly `invoke` or `invoke_signed` to perform the CPI.
+
+This is a `no_std` crate.
 
 **Mainnet Program ID:** `NkPE8JBLhrdvTBnktRBS8bMkZqgjtNvHXjAZ9nGhSPL`
 
-## Why pTokens?
+> **Note:** The API defined in this crate is subject to change.
 
-pTokens represent a new standard for Solana programs:
+## Examples
 
-* **Zero external dependencies** &mdash; nothing to slow you down
-* **Minimal compute units** &mdash; every CU counts
-* **Tiny binary size** &mdash; lean and mean
-* **`no_std` by default** &mdash; pure efficiency
+Initializing a mint account:
+```rust
+// This example assumes that the instruction receives a writable `mint`
+// account; `authority` is a `Address`.
+InitializeMint {
+    mint,
+    rent_sysvar,
+    decimals: 9,
+    mint_authority: authority,
+    freeze_authority: Some(authority),
+}.invoke()?;
+```
 
-## Features
+Performing a transfer of tokens:
+```rust
+// This example assumes that the instruction receives writable `from` and `to`
+// accounts, and a signer `authority` account.
+Transfer {
+    from,
+    to,
+    authority,
+    amount: 10,
+}.invoke()?;
+```
 
-* Ultra-lightweight program entrypoint
-* Optimized for minimal CU consumption
-* Composable with any Solana program (Meteora, Jupiter, Raydium, etc.)
-* Built on battle-tested pinocchio primitives
+Minting tokens:
+```rust
+MintTo {
+    mint,
+    account,
+    mint_authority,
+    amount: 1_000_000,
+}.invoke()?;
+```
+
+Burning tokens:
+```rust
+Burn {
+    account,
+    mint,
+    authority,
+    amount: 500_000,
+}.invoke()?;
+```
 
 ## Instructions
 
-| Instruction | Discriminator | Description |
-|-------------|---------------|-------------|
-| `Ping` | `[0]` | Simple interaction &mdash; logs "Ping!" |
-| `Interact` | `[1, ...data]` | Composable instruction for multi-program transactions |
+| Instruction | Description |
+|-------------|-------------|
+| `InitializeMint` | Initialize a new mint |
+| `InitializeMint2` | Initialize mint without rent sysvar |
+| `InitializeAccount` | Initialize a new token account |
+| `InitializeAccount2` | Initialize account without rent sysvar |
+| `InitializeAccount3` | Initialize account with owner |
+| `InitializeMultisig` | Initialize a multisig account |
+| `InitializeMultisig2` | Initialize multisig without rent sysvar |
+| `Transfer` | Transfer tokens between accounts |
+| `TransferChecked` | Transfer with decimal verification |
+| `Approve` | Approve a delegate |
+| `ApproveChecked` | Approve with decimal verification |
+| `Revoke` | Revoke a delegate |
+| `SetAuthority` | Set a new authority |
+| `MintTo` | Mint new tokens |
+| `MintToChecked` | Mint with decimal verification |
+| `Burn` | Burn tokens |
+| `BurnChecked` | Burn with decimal verification |
+| `CloseAccount` | Close a token account |
+| `FreezeAccount` | Freeze a token account |
+| `ThawAccount` | Thaw a frozen account |
+| `SyncNative` | Sync native SOL balance |
 
-## Getting Started
-
-### Interacting with the Program
-
-```typescript
-import { TransactionInstruction, PublicKey } from "@solana/web3.js";
-
-const PINOCCHIO_TOKEN = new PublicKey("NkPE8JBLhrdvTBnktRBS8bMkZqgjtNvHXjAZ9nGhSPL");
-
-// Ping the program
-const pingIx = new TransactionInstruction({
-  programId: PINOCCHIO_TOKEN,
-  keys: [{ pubkey: wallet.publicKey, isSigner: true, isWritable: false }],
-  data: Buffer.from([0])
-});
-
-// Compose with other programs (e.g., Meteora DBC)
-const interactIx = new TransactionInstruction({
-  programId: PINOCCHIO_TOKEN,
-  keys: [
-    { pubkey: wallet.publicKey, isSigner: true, isWritable: false },
-    // Add any additional accounts for context
-  ],
-  data: Buffer.from([1, /* your data */])
-});
-
-// Add to your transaction
-transaction.add(meteoraInstruction, pingIx);
-```
-
-### Building from Source
+## Building
 
 ```bash
 cargo build-sbf
